@@ -2350,6 +2350,29 @@ const onboardState = {
 
 const PROFILE_KEY = 'barelabel_skin_profile_v1';
 
+// ── Backend (FormSubmit — leads emailed to Khushi) ──
+const FORMSUBMIT_URL = 'https://formsubmit.co/ajax/khushibagai30.kb@gmail.com';
+
+function submitLead(profile) {
+  try {
+    fetch(FORMSUBMIT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        _subject: `Bare Label lead — ${profile.name}`,
+        _captcha: 'false',
+        _template: 'table',
+        name: profile.name,
+        phone: (profile.country || '') + ' ' + profile.phone,
+        skin_type: profile.skinType,
+        site: 'v1-skin',
+        created_at: profile.createdAt,
+        user_agent: navigator.userAgent,
+      })
+    }).catch(() => {});
+  } catch (e) { /* fail silently — onboarding shouldn't break if backend fails */ }
+}
+
 function loadProfile() {
   try {
     const raw = localStorage.getItem(PROFILE_KEY);
@@ -2432,6 +2455,7 @@ function onboardFinish() {
     createdAt: new Date().toISOString(),
   };
   saveProfile(userProfile);
+  submitLead(userProfile);
 
   if (typeof trackEvent === 'function') {
     trackEvent('onboarding_completed', userProfile);
