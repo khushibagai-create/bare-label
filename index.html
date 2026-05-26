@@ -2350,24 +2350,23 @@ const onboardState = {
 
 const PROFILE_KEY = 'barelabel_skin_profile_v1';
 
-// ── Backend (FormSubmit — leads emailed to Khushi) ──
-const FORMSUBMIT_URL = 'https://formsubmit.co/ajax/khushibagai30.kb@gmail.com';
+// ── Backend (Google Apps Script Web App → Google Sheet) ──
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQDIYFn7A7_ogywDsVZW-yvKAOOhScFbdtugnfya-O5DOL4FzXMDQ0GiKz8R1aUvYH/exec';
 
 function submitLead(profile) {
   try {
-    fetch(FORMSUBMIT_URL, {
+    fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({
-        _subject: `Bare Label lead — ${profile.name}`,
-        _captcha: 'false',
-        _template: 'table',
         name: profile.name,
-        phone: (profile.country || '') + ' ' + profile.phone,
-        skin_type: profile.skinType,
+        phone: profile.phone,
+        country: profile.country,
+        skinType: profile.skinType,
+        createdAt: profile.createdAt,
         site: 'v1-skin',
-        created_at: profile.createdAt,
-        user_agent: navigator.userAgent,
+        userAgent: navigator.userAgent,
       })
     }).catch(() => {});
   } catch (e) { /* fail silently — onboarding shouldn't break if backend fails */ }
